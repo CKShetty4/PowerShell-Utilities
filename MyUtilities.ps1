@@ -1,3 +1,23 @@
+# -----------------------
+# Welcome Message and ASCII Art
+# -----------------------
+
+# Display ASCII art and welcome message when PowerShell starts
+$asciiArt = @"
+
+				  ____ _  ______  _          _   _         
+      |\    _,,,---,,_	 	 / ___| |/ / ___|| |__   ___| |_| |_ _   _ 
+ZZZzz /,`.-'`'    -.  ;-;;,_	| |   | ' /\___ \| '_ \ / _ \ __| __| | | |
+     |,4-  ) )-,_. ,\ (  `'-'	| |___| . \ ___) | | | |  __/ |_| |_| |_| |
+    '---''(_/--'  '-'\_) 	 \____|_|\_\____/|_| |_|\___|\__|\__|\__, |
+ 				                                     |___/ 
+
+"@
+Write-Host $asciiArt -ForegroundColor Cyan
+Write-Host "Welcome, $env:USERNAME!" -ForegroundColor Green
+Write-Host "Session started: $(Get-Date -Format 'dddd, MMMM dd, yyyy hh:mm tt')" -ForegroundColor Green
+Write-Host "Type 'help' to see custom commands." -ForegroundColor Yellow
+
 # ----------------------
 # Help Function
 # ----------------------
