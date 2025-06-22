@@ -69,6 +69,7 @@ function help {
         {$_ -eq 0 -or $_ -eq 4} {
             Write-Host "4. Git Utility Functions" -ForegroundColor Green
             Write-Host "--------------------------------" -ForegroundColor Green
+	    Write-Host "ginit <repo_name> : Initialize current working directory and push to repo"
             Write-Host "gs                : Shows the Git working directory status (git status)."
             Write-Host "gc [msg]          : Commits staged changes with an optional message (default: 'update')."
             Write-Host "gf                : Fetches updates from remote without merging (git fetch)."
@@ -384,6 +385,58 @@ function ask {
 # ----------------------
 # Git Utility Functions
 # ----------------------
+
+function ginit {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$repoName,
+        [switch]$existing,
+        [string]$githubUser = "CKShetty4"
+    )
+
+    try {
+
+        $files = Get-ChildItem -Path . -File -Force | Where-Object { $_.Name -ne ".git" -and $_.Name -ne ".gitignore" }
+
+        if (-not $existing) {
+            git init
+
+            if (-not $files) {
+                echo "# $repoName" | Out-File -FilePath README.md -Encoding utf8
+                git add README.md
+            } else {
+                # Add all files in the directory
+                git add .
+            }
+
+            git commit -m "first commit"
+        } else {
+            # For existing repositories, ensure it's a git repo
+            if (-not (Test-Path .git)) {
+                Write-Error "Directory is not a Git repository. Use -existing only for initialized repos."
+                return
+            }
+
+            if ($files) {
+                git add .
+                git commit -m "Initial commit with existing files"
+            } else {
+                Write-Host "No files to commit in existing repository." -ForegroundColor Yellow
+            }
+        }
+
+        git branch -M main
+        $remoteUrl = "https://github.com/$githubUser/$repoName.git"
+        git remote add origin $remoteUrl -f
+        git push -u origin main
+
+        Write-Host "Repository '$repoName' initialized and pushed to GitHub." -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to initialize repository: $($_.Exception.Message)"
+        Write-Host "Ensure Git is installed, you have internet access, the repository URL is valid, and you have write permissions to https://github.com/$githubUser/$repoName.git." -ForegroundColor Red
+    }
+}
 
 function gs {
     git status
